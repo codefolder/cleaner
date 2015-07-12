@@ -1,17 +1,18 @@
-from Tkinter import Button
-from Tkinter import END
-from Tkinter import Entry
-from Tkinter import Frame
-from Tkinter import Label
-from Tkinter import Tk
 import os.path
 import pickle
 import random
-import tkFileDialog
-import tkMessageBox
 
+from tkinter import Button
+from tkinter import END
+from tkinter import Entry
+from tkinter import Frame
+from tkinter import Label
+from tkinter import Tk
+from tkinter import filedialog
+from tkinter import messagebox
+from psutil._compat import xrange
 
-__author__="codefolder@@users.noreply.github.com"
+__author__="codefolder@users.noreply.github.com"
 
 class Cleaner(Tk):
     def __init__(self, parent):
@@ -75,7 +76,7 @@ class Cleaner(Tk):
         
     def createNewPanelNumber(self):
         panelNumber = random.randint(0, 999999)
-        while self.__pathpanels__.has_key(panelNumber):
+        while panelNumber in self.__pathpanels__:
             panelNumber = random.randint(0, 999999)
         return panelNumber
 
@@ -102,7 +103,7 @@ class Cleaner(Tk):
             if cmd == "Change":
                 #################### change path in gui ########################
                 currDir = entryWidget.get()
-                pathToDir = tkFileDialog.askdirectory(initialdir=currDir,parent=self,title="Choose a directory to clean",mustexist=True)
+                pathToDir = filedialog.askdirectory(initialdir=currDir,parent=self,title="Choose a directory to clean",mustexist=True)
                 if not pathToDir:
                     return
                 else:
@@ -122,7 +123,7 @@ class Cleaner(Tk):
     def createNewPathPanel(self, panelNumber=None, pathToDir=None, addNewPanel=False):
         usrhome = os.path.expanduser('~')
         if not pathToDir: # create panel from scratch
-            pathToDir = tkFileDialog.askdirectory(initialdir=usrhome,parent=self,title="Choose a directory to clean",mustexist=True)
+            pathToDir = filedialog.askdirectory(initialdir=usrhome,parent=self,title="Choose a directory to clean",mustexist=True)
             if not pathToDir: # file dialog cancelled or closed by user
                 return
         if not panelNumber: # continue creating panel from scratch
@@ -136,8 +137,9 @@ class Cleaner(Tk):
         buttonRemove = Button(frm,text="Relinquish",command=lambda pn=panelNumber,cmd="Relinquish": self.processEvent(pn,cmd))
         buttonChange = Button(frm,text="Change",command=lambda pn=panelNumber,cmd="Change": self.processEvent(pn,cmd))
         buttonClean = Button(frm,text="Clean",command=lambda pn=panelNumber,cmd="Clean": self.processEvent(pn,cmd))
-        label.pack(side="left",anchor="w",padx=1,pady=1)
-        entry.pack(side="left",fill="x",expand="True",padx=1,pady=1)
+        # The following lines recently started to cause a GUI geometry conflict
+        #label.pack(side="left",anchor="w",padx=1,pady=1)
+        #entry.pack(side="left",fill="x",expand="True",padx=1,pady=1)
         label.grid(row=0,padx=1,pady=1)
         entry.grid(row=0,column=1,padx=1,pady=1)
         buttonRemove.grid(row=0,column=2,padx=1,pady=1)
@@ -149,7 +151,7 @@ class Cleaner(Tk):
             self.geometry("") # some trick! not to be found in any docs! needs a null parameter to re-pack.
 
     def purgeAllDirectories(self):
-        confirmed = tkMessageBox.askyesno(
+        confirmed = messagebox.askyesno(
             message="Clean all directories by deleting all files in them?",
             icon="question", title="Final sanity check");
         if not confirmed: return
@@ -161,7 +163,7 @@ class Cleaner(Tk):
     def purgeDirectory(self,  rootDir=None):
         if rootDir == None: return
         if self.cleanAllRequested == False: # not to bring up dialog for every dir in a batch
-            confirmed = tkMessageBox.askyesno(
+            confirmed = messagebox.askyesno(
                 message="Delete all files in this directory?",
                 icon="question", title="Final sanity check");
             if not confirmed: return
