@@ -3,21 +3,7 @@
 import os.path
 import pickle
 import random
-'''
-from tkinter import Button
-from tkinter import END
-from tkinter import Entry
-from tkinter import Frame
-from tkinter import Label
-from tkinter import Tk
-'''
-# Replaced by Gtk
-
 from gi.repository import Gtk
-'''
-from tkinter import filedialog
-from tkinter import messagebox
-'''
 from psutil._compat import xrange
 
 __author__="codefolder@users.noreply.github.com"
@@ -40,8 +26,8 @@ class Cleaner(Gtk.Window):
         self.buttonCleanAll.connect("clicked", lambda wid: self.purgeAllDirectories())
         panel = Gtk.Box(spacing=10)
         panel.pack_start(Gtk.Box(), True, True, 0)
-        panel.pack_start(self.buttonCleanAll, False, True, 0)
         panel.pack_start(self.buttonAddDir, False, True, 0)
+        panel.pack_start(self.buttonCleanAll, False, True, 0)
         self.box.add(panel)
         self.add(self.box)
         try:
@@ -86,6 +72,7 @@ class Cleaner(Gtk.Window):
                 #################### remove panel from gui ###################
                 self.box.remove(self.__pathpanels__[panelNumber][0])
                 self.__pathpanels__.pop(panelNumber)
+                self.resize(800, 1)
                 self.box.show_all() # re-pack toplevel
                 #################### remove panel from storage ###############
                 for i in xrange(0, len(self.__persistentStorage__)):
@@ -160,6 +147,7 @@ class Cleaner(Gtk.Window):
         panel.add(buttonChange)
         panel.add(buttonClean)
         self.box.add(panel)
+        self.box.reorder_child(panel, 0)
         self.box.show_all()
         self.__pathpanels__[panelNumber] = [panel, entry]
         if addNewPanel:
@@ -221,7 +209,7 @@ class Cleaner(Gtk.Window):
 
 if __name__ == "__main__":
     win = Cleaner()
-    win.set_default_size(600, 0)
+    win.set_default_size(800, 0)
     win.set_position(Gtk.WindowPosition.CENTER)
     win.connect("delete-event", win.saveAndExit)
     win.show_all()
